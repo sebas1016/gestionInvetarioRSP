@@ -1,0 +1,37 @@
+<div class="page-header">
+
+    <div>
+
+        <h2 class="page-header-title">
+
+            {{ page_title }}
+
+        </h2>
+
+        {% if page_description %}
+
+        <p class="page-header-description">
+
+            {{ page_description }}
+
+        </p>
+
+        {% endif %}
+
+    </div>
+
+    {% if page_action %}
+
+    <a href="{% url page_action.url %}"
+
+       class="btn btn-primary">
+
+        <i class="bi {{ page_action.icon }}"></i>
+
+        {{ page_action.title }}
+
+    </a>
+
+    {% endif %}
+
+</div>

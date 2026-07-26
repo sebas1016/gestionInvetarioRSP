@@ -1,0 +1,18 @@
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name in 'marca_list,marca_edit,marca_delete' %}active{% endif %}"
+           href="{% url 'marca_list' %}">Marcas</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name in 'modelo_list,modelo_edit,modelo_delete' %}active{% endif %}"
+           href="{% url 'modelo_list' %}">Modelos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name in 'tipo_list,tipo_edit,tipo_delete' %}active{% endif %}"
+           href="{% url 'tipo_list' %}">Tipos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name in 'anaquel_list,anaquel_edit,anaquel_delete' %}active{% endif %}"
+           href="{% url 'anaquel_list' %}">Anaqueles</a>
+    </li>
+</ul>

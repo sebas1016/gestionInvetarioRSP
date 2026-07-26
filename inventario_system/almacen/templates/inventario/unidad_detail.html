@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Unidad {{ unidad.codigo_unico }}{% endblock %}
+
+{% block content %}
+{% include "almacen/partials/_breadcrumb.html" %}
+<div class="page-header">
+    <h1 class="page-header__title">Unidad {{ unidad.codigo_unico }}</h1>
+    <p class="page-header__subtitle">{{ unidad.repuesto }}</p>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+            <p class="mb-1"><strong>Estado:</strong>
+                <span class="badge bg-info text-dark">{{ unidad.get_estado_display }}</span>
+            </p>
+            <p class="mb-1"><strong>Anaquel:</strong> {{ unidad.anaquel.codigo }}</p>
+            <p class="mb-0"><strong>Fecha de ingreso:</strong> {{ unidad.fecha_ingreso|date:"d/m/Y H:i" }}</p>
+        </div>
+
+        <div class="text-center">
+            {% if unidad.imagen_codigo_barras %}
+                <img src="{{ unidad.imagen_codigo_barras.url }}" alt="Código de barras" style="max-width: 220px;">
+            {% else %}
+                <p class="text-muted mb-0">Sin código de barras generado.</p>
+            {% endif %}
+            <div class="mt-2">
+                <a href="{% url 'unidad_etiqueta' unidad.pk %}" target="_blank"
+                   class="btn btn-sm btn-outline-secondary">
+                    Ver etiqueta imprimible
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <h5 class="mb-3">Historial fotográfico</h5>
+        {% for foto in fotos %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="mb-2">Versión {{ foto.version }} — {{ foto.fecha|date:"d/m/Y H:i" }}</h6>
+                    <div class="row">
+                        <div class="col-6">
+                            <img src="{{ foto.frontal.url }}" class="img-fluid rounded mb-2" alt="Frontal">
+                        </div>
+                        <div class="col-6">
+                            <img src="{{ foto.trasera.url }}" class="img-fluid rounded mb-2" alt="Trasera">
+                        </div>
+                    </div>
+                    {% if foto.descripcion %}
+                        <p class="mb-0 text-muted">{{ foto.descripcion }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted">Aún no hay fotos registradas.</p>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-5">
+        <h5 class="mb-3">Componentes retirados</h5>
+        <ul class="list-group mb-4">
+            {% for componente in componentes %}
+                <li class="list-group-item">
+                    <strong>{{ componente.nombre }}</strong> ({{ componente.referencia }})
+                    <br>
+                    <small class="text-muted">{{ componente.fecha|date:"d/m/Y H:i" }}</small>
+                    {% if componente.observacion %}
+                        <p class="mb-0">{{ componente.observacion }}</p>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted">Sin componentes retirados.</li>
+            {% endfor %}
+        </ul>
+
+        <h5 class="mb-3">Registrar retiro de componente</h5>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Referencia</label>
+                {{ form.referencia }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                {{ form.nombre }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Observación del retiro</label>
+                {{ form.observacion_componente }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nueva foto frontal</label>
+                {{ form.foto_frontal }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nueva foto trasera</label>
+                {{ form.foto_trasera }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Descripción de esta versión</label>
+                {{ form.observacion_foto }}
+            </div>
+
+            <button type="submit" class="btn btn-danger">Registrar retiro</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

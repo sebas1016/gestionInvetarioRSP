@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Historial de movimientos</h2>
+
+<form method="GET">
+
+<div class="row mb-3">
+
+<div class="col">
+
+<input
+class="form-control"
+name="buscar"
+placeholder="Buscar referencia">
+
+</div>
+
+<div class="col">
+
+<button
+class="btn btn-primary">
+
+Buscar
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>Fecha</th>
+<th>Marca</th>
+<th>Modelo</th>
+<th>Tipo</th>
+<th>Repuesto</th>
+<th>Unidad</th>
+<th>Cantidad</th>
+<th>Origen</th>
+<th>Destino</th>
+<th>Usuario</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for m in movimientos %}
+
+<tr>
+
+<td>{{m.fecha|date:"d/m/Y H:i"}}</td>
+
+<td>{{m.repuesto.modelo.marca}}</td>
+
+<td>{{m.repuesto.modelo}}</td>
+
+<td>{{m.tipo}}</td>
+
+<td>{{m.repuesto}}</td>
+
+<td>
+
+{% if m.unidad %}
+
+<a href="{% url 'detalle_unidad' m.unidad.id %}">
+
+{{m.unidad.codigo_unico}}
+
+</a>
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+<td>{{m.cantidad}}</td>
+
+<td>{{m.anaquel_origen|default:"-"}}</td>
+
+<td>{{m.anaquel_destino|default:"-"}}</td>
+
+<td>{{m.usuario|default:"Sistema"}}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}

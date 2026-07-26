@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar salida{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header__title">Registrar salida</h1>
+    <p class="page-header__subtitle">Escanea o pega el código de barras del repuesto o unidad.</p>
+</div>
+
+<div class="card mb-4" style="max-width: 500px;">
+    <div class="card-body">
+        <form method="get">
+            <div class="input-group">
+                <input type="text" name="codigo" class="form-control" placeholder="Código de barras"
+                       value="{{ codigo }}" autofocus autocomplete="off">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if tipo_encontrado == "repuesto" %}
+    <div class="card mb-4" style="max-width: 500px;">
+        <div class="card-body">
+            <h6>{{ objeto_encontrado }}</h6>
+            <p class="text-muted mb-3">
+                Referencia: {{ objeto_encontrado.referencia }} &nbsp;|&nbsp;
+                Stock actual: {{ objeto_encontrado.stock_actual }}
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="codigo" value="{{ codigo }}">
+
+                <div class="mb-3">
+                    <label class="form-label">Cantidad</label>
+                    {{ form.cantidad }}
+                    {{ form.cantidad.errors }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Anaquel origen</label>
+                    {{ form.anaquel_origen }}
+                    {{ form.anaquel_origen.errors }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Observación</label>
+                    {{ form.observacion }}
+                </div>
+
+                <button type="submit" class="btn btn-danger">Registrar salida</button>
+            </form>
+        </div>
+    </div>
+
+{% elif tipo_encontrado == "unidad" %}
+    <div class="card mb-4" style="max-width: 500px;">
+        <div class="card-body">
+            <h6>{{ objeto_encontrado.codigo_unico }}</h6>
+            <p class="text-muted mb-3">
+                {{ objeto_encontrado.repuesto }} &nbsp;|&nbsp;
+                Estado actual: {{ objeto_encontrado.get_estado_display }}
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="codigo" value="{{ codigo }}">
+
+                <div class="mb-3">
+                    <label class="form-label">Nuevo estado</label>
+                    {{ form.nuevo_estado }}
+                    {{ form.nuevo_estado.errors }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Observación</label>
+                    {{ form.observacion }}
+                </div>
+
+                <button type="submit" class="btn btn-danger">Registrar salida</button>
+            </form>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header__title">Dashboard</h1>
+    <p class="page-header__subtitle">Resumen general del inventario</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <p class="dashboard-card__label">Repuestos</p>
+                <p class="dashboard-card__value">{{ resumen.total_repuestos }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <p class="dashboard-card__label">Unidades serializadas</p>
+                <p class="dashboard-card__value">{{ resumen.total_unidades }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <p class="dashboard-card__label">Movimientos</p>
+                <p class="dashboard-card__value">{{ resumen.total_movimientos }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <p class="dashboard-card__label">Anaqueles</p>
+                <p class="dashboard-card__value">{{ resumen.total_anaqueles }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h5 class="mb-3">Accesos rápidos</h5>
+<div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'ingreso_repuesto' %}" class="btn btn-primary">+ Registrar ingreso</a>
+    <a href="{% url 'repuesto_list' %}" class="btn btn-outline-primary">Ver repuestos</a>
+</div>
+{% endblock %}

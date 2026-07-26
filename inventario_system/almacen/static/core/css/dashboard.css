@@ -1,0 +1,46 @@
+/* ==========================
+   DASHBOARD
+========================== */
+
+.dashboard-card{
+
+    transition: .25s;
+    cursor: default;
+
+}
+
+.dashboard-card:hover{
+
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.dashboard-card .rsp-card-body{
+
+    text-align:center;
+
+}
+
+.dashboard-icon{
+
+    font-size:2.5rem;
+    color:var(--primary);
+    margin-bottom:15px;
+
+}
+
+.dashboard-card h3{
+
+    font-size:2rem;
+    font-weight:700;
+    margin-bottom:6px;
+
+}
+
+.dashboard-card p{
+
+    color:var(--text-light);
+    margin:0;
+
+}

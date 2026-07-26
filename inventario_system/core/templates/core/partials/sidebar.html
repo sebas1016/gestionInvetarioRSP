@@ -1,0 +1,88 @@
+{% load static %}
+
+<aside class="sidebar">
+
+    <div class="sidebar-header">
+
+        <img src="{% static 'core/img/logo.jpg' %}"
+             class="sidebar-logo"
+             alt="Logo">
+
+        <div>
+
+            <h5 class="sidebar-title">
+                RSP Inventory
+            </h5>
+
+            <small class="sidebar-version">
+                v0.1.0
+            </small>
+
+        </div>
+
+    </div>
+
+    <nav class="sidebar-menu">
+
+        <ul>
+
+            {% for item in MENU %}
+
+            <li>
+
+                <a href="{% url item.url %}"
+                   class="sidebar-link {% if request.resolver_match.url_name == item.url %}active{% endif %}">
+
+                    <i class="bi {{ item.icon }}"></i>
+
+                    <span>
+
+                        {{ item.title }}
+
+                    </span>
+
+                </a>
+
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <div class="status">
+
+            <span class="status-dot"></span>
+
+            Servidor en línea
+
+        </div>
+
+        <div class="user-info">
+
+            <i class="bi bi-person-circle"></i>
+
+            <div>
+
+                <strong>
+
+                    {{ request.user.username }}
+
+                </strong>
+
+                <small>
+
+                    Administrador
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>

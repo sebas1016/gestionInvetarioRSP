@@ -1,0 +1,55 @@
+<div class="rsp-card">
+
+    <div class="table-responsive">
+
+        <table class="rsp-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Marca</th>
+
+                    <th>Modelo</th>
+
+                    <th>Tipo</th>
+
+                    <th>Stock</th>
+
+                    <th></th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for repuesto in repuestos %}
+
+                <tr>
+
+                    <td>{{ repuesto.marca }}</td>
+
+                    <td>{{ repuesto.modelo }}</td>
+
+                    <td>{{ repuesto.tipo }}</td>
+
+                    <td>{{ repuesto.stock_actual }}</td>
+
+                    <td>
+
+                        botones...
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}{{ repuesto.referencia }}{% endblock %}
+
+{% block content %}
+{% include "almacen/partials/_breadcrumb.html" %}
+<div class="page-header">
+    <h1 class="page-header__title">
+        {{ repuesto.modelo.marca.nombre }} {{ repuesto.modelo.nombre }} — {{ repuesto.tipo.nombre }}
+    </h1>
+    <p class="page-header__subtitle">Referencia: {{ repuesto.referencia }}</p>
+    <div class="d-flex gap-2">
+        <a href="{% url 'repuesto_edit' repuesto.pk %}" class="btn btn-outline-secondary">Editar</a>
+        <a href="{% url 'repuesto_delete' repuesto.pk %}" class="btn btn-outline-danger">Eliminar</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <p>{{ repuesto.descripcion }}</p>
+        <p class="mb-0">
+            <strong>Stock actual:</strong> {{ repuesto.stock }}
+            &nbsp;|&nbsp;
+            <strong>Stock mínimo:</strong> {{ repuesto.stock_minimo }}
+        </p>
+    </div>
+    
+        <div class="text-center">
+            {% if repuesto.imagen_codigo_barras %}
+                <img src="{{ repuesto.imagen_codigo_barras.url }}" alt="Código de barras" style="max-width: 220px;">
+            {% else %}
+                <p class="text-muted mb-0">Sin código de barras generado.</p>
+            {% endif %}
+            <div class="mt-2">
+                <a href="{% url 'repuesto_etiqueta' repuesto.pk %}" target="_blank"
+                   class="btn btn-sm btn-outline-secondary">
+                    Ver etiqueta imprimible
+                </a>
+            </div>
+        </div>
+   
+</div>
+
+{% if repuesto.tipo.es_serializado %}
+
+    <h5 class="mb-3">Unidades</h5>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Código único</th>
+                        <th>Estado</th>
+                        <th>Anaquel</th>
+                        <th>Fecha de ingreso</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for unidad in unidades %}
+                        <tr>
+                            <td>{{ unidad.codigo_unico }}</td>
+                            <td>
+                                <span class="badge bg-info text-dark">{{ unidad.get_estado_display }}</span>
+                            </td>
+                            <td>{{ unidad.anaquel.codigo }}</td>
+                            <td>{{ unidad.fecha_ingreso|date:"d/m/Y H:i" }}</td>
+                            <td><a href="{% url 'unidad_detail' unidad.pk %}">{{ unidad.codigo_unico }}</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">Aún no hay unidades.</td></tr>
+                    {% endfor %}
+
+                </tbody>
+                
+            </table>
+            {% if unidades.has_other_pages %}
+                    <nav class="mt-3">
+                        <ul class="pagination justify-content-center">
+
+                            {% if unidades.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ unidades.previous_page_number }}">Anterior</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    Página {{ unidades.number }} de {{ unidades.paginator.num_pages }}
+                                </span>
+                            </li>
+
+                            {% if unidades.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ unidades.next_page_number }}">Siguiente</a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </nav>
+                {% endif %}
+        </div>
+    </div>
+
+{% else %}
+
+    <h5 class="mb-3">Últimos movimientos</h5>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Cantidad</th>
+                        <th>Anaquel destino</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mov in movimientos %}
+                        <tr>
+                            <td>{{ mov.get_tipo_display }}</td>
+                            <td>{{ mov.cantidad }}</td>
+                            <td>{{ mov.anaquel_destino.codigo|default:"—" }}</td>
+                            <td>{{ mov.usuario|default:"—" }}</td>
+                            <td>{{ mov.fecha|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5" class="text-center text-muted py-4">Aún no hay movimientos.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endif %}
+{% endblock %}

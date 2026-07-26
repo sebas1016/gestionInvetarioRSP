@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Anaqueles{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header__title">Anaqueles</h1>
+</div>
+{% include "almacen/configuracion/_subnav.html" %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h6 class="mb-3">Nuevo anaquel</h6>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Código</label>
+                        {{ form.codigo }}
+                        {{ form.codigo.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        {{ form.descripcion }}
+                        {{ form.descripcion.errors }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Crear</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr><th>Código</th><th>Descripción</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        {% for anaquel in anaqueles %}
+                            <tr>
+                                <td>{{ anaquel.codigo }}</td>
+                                <td>{{ anaquel.descripcion|truncatechars:60 }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'anaquel_edit' anaquel.pk %}"
+                                       class="btn btn-sm btn-outline-secondary">Editar</a>
+                                    <a href="{% url 'anaquel_delete' anaquel.pk %}"
+                                       class="btn btn-sm btn-outline-danger">Eliminar</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="3" class="text-center text-muted py-4">No hay anaqueles registrados.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+/*==========================
+TABLE
+==========================*/
+.rsp-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.rsp-table thead{
+
+    background:#F9FAFB;
+
+}
+
+.rsp-table tr{
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.rsp-table tbody tr:hover{
+
+    background:#F8FAFC;
+
+}
+
+.rsp-table td,
+
+.rsp-table th{
+
+    padding:14px 18px;
+
+}

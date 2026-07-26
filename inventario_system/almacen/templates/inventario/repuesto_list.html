@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Repuestos{% endblock %}
+
+{% block content %}
+{% include "almacen/partials/_breadcrumb.html" %}
+<div class="page-header">
+    <h1 class="page-header__title">Repuestos</h1>
+    <a href="{% url 'ingreso_repuesto' %}" class="btn btn-primary">+ Ingreso</a>
+    <a href="{% url 'repuesto_create' %}" class="btn btn-outline-primary">+ Nuevo repuesto</a>
+</div>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="q" class="form-control" placeholder="Buscar por referencia o descripción"
+               value="{{ busqueda }}">
+    </div>
+    <div class="col-md-3">
+        <select name="marca" class="form-select">
+            <option value="">Todas las marcas</option>
+            {% for marca in marcas %}
+                <option value="{{ marca.id }}" {% if marca_id == marca.id|stringformat:"s" %}selected{% endif %}>
+                    {{ marca.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="tipo" class="form-select">
+            <option value="">Todos los tipos</option>
+            {% for tipo in tipos %}
+                <option value="{{ tipo.id }}" {% if tipo_id == tipo.id|stringformat:"s" %}selected{% endif %}>
+                    {{ tipo.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
+    </div>
+</form>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Tipo</th>
+                    <th>Referencia</th>
+                    <th>Stock</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for repuesto in repuestos %}
+                    <tr>
+                        <td>{{ repuesto.modelo.marca.nombre }}</td>
+                        <td>{{ repuesto.modelo.nombre }}</td>
+                        <td>{{ repuesto.tipo.nombre }}</td>
+                        <td>{{ repuesto.referencia }}</td>
+                        <td>
+                            {% if repuesto.stock <= repuesto.stock_minimo %}
+                                <span class="badge bg-danger">{{ repuesto.stock }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ repuesto.stock }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'repuesto_detail' repuesto.pk %}"
+                               class="btn btn-sm btn-outline-primary">Ver detalle</a>
+                        </td>
+                    </tr>
+                    
+                {% empty %}
+                    <tr><td colspan="6" class="text-center text-muted py-4">No hay repuestos registrados.</td></tr>
+                {% endfor %}
+                {% if repuestos.has_other_pages %}
+                        <nav class="mt-3">
+                            <ul class="pagination justify-content-center">
+
+                                {% if repuestos.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                        href="?page={{ repuestos.previous_page_number }}&q={{ busqueda }}&marca={{ marca_id|default:'' }}&tipo={{ tipo_id|default:'' }}">
+                                            Anterior
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item disabled">
+                                    <span class="page-link">
+                                        Página {{ repuestos.number }} de {{ repuestos.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if repuestos.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                        href="?page={{ repuestos.next_page_number }}&q={{ busqueda }}&marca={{ marca_id|default:'' }}&tipo={{ tipo_id|default:'' }}">
+                                            Siguiente
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                            </ul>
+                        </nav>
+                    {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

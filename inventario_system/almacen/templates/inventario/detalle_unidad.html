@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Detalle Unidad</h2>
+
+<div class="card mb-4">
+
+<div class="card-body">
+
+<p>
+
+<b>Código:</b>
+
+{{unidad.codigo_unico}}
+
+</p>
+<p>
+
+<b>Marca:</b>
+
+{{unidad.repuesto.modelo.marca}}
+
+</p>
+
+<p>
+
+<b>Modelo:</b>
+
+{{unidad.repuesto.modelo}}
+
+</p>
+
+<p>
+
+<b>Repuesto:</b>
+
+{{unidad.repuesto}}
+
+</p>
+
+<p>
+
+<b>Estado:</b>
+
+{{unidad.estado}}
+
+</p>
+
+<p>
+
+<b>Anaquel:</b>
+
+{{unidad.anaquel}}
+
+</p>
+
+<p>
+
+<b>Ingreso:</b>
+
+{{unidad.fecha_ingreso}}
+
+</p>
+
+</div>
+
+</div>
+
+
+<h3>Historial</h3>
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>Fecha</th>
+
+<th>Tipo</th>
+
+<th>Origen</th>
+
+<th>Destino</th>
+
+<th>Usuario</th>
+
+<th>Observación</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for m in movimientos %}
+
+<tr>
+
+<td>
+
+{{m.fecha|date:"d/m/Y H:i"}}
+
+</td>
+
+<td>
+
+{{m.tipo}}
+
+</td>
+
+<td>
+
+{{m.anaquel_origen|default:"-"}}
+
+</td>
+
+<td>
+
+{{m.anaquel_destino|default:"-"}}
+
+</td>
+
+<td>
+
+{{m.usuario|default:"Sistema"}}
+
+</td>
+
+<td>
+
+{{m.observacion}}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<h3>Registro fotográfico</h3>
+
+{% for foto in unidad.fotos.all %}
+
+<div class="card mb-3">
+
+<div class="card-body">
+
+<h5>
+
+Versión {{foto.version}}
+
+</h5>
+
+<p>
+
+{{foto.descripcion}}
+
+</p>
+
+<div class="row">
+
+<div class="col">
+
+<img
+src="{{foto.frontal.url}}"
+class="img-fluid">
+
+</div>
+
+<div class="col">
+
+<img
+src="{{foto.trasera.url}}"
+class="img-fluid">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+<h3>Componentes retirados</h3>
+
+<table class="table">
+
+<thead>
+
+<tr>
+
+<th>Referencia</th>
+<th>Nombre</th>
+<th>Fecha</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for c in unidad.componentes.all %}
+
+<tr>
+
+<td>{{c.referencia}}</td>
+
+<td>{{c.nombre}}</td>
+
+<td>{{c.fecha}}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+{% endblock %}

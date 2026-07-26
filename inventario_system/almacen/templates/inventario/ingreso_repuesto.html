@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ingreso de repuesto{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header__title">Ingreso de repuesto</h1>
+    <p class="page-header__subtitle">Registra entrada de stock o unidades serializadas al almacén.</p>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<div class="card ingreso-card">
+    <div class="card-body">
+
+        <div class="btn-group mb-4" role="group" aria-label="Tipo de ingreso">
+            <input type="radio" class="btn-check" name="tipo_ingreso_selector" id="opt-no-serializado" checked>
+            <label class="btn btn-outline-primary" for="opt-no-serializado">Repuesto con stock</label>
+
+            <input type="radio" class="btn-check" name="tipo_ingreso_selector" id="opt-serializado">
+            <label class="btn btn-outline-primary" for="opt-serializado">Unidades serializadas</label>
+        </div>
+
+        <!-- ===================== FORM: NO SERIALIZADO ===================== -->
+        <form method="post" id="form-no-serializado" class="ingreso-seccion">
+            {% csrf_token %}
+            <input type="hidden" name="tipo_ingreso" value="no_serializado">
+
+            <div class="mb-3">
+                <label class="form-label">Repuesto</label>
+                {{ form_no_serializado.repuesto }}
+                {{ form_no_serializado.repuesto.errors }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Cantidad</label>
+                    {{ form_no_serializado.cantidad }}
+                    {{ form_no_serializado.cantidad.errors }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Anaquel destino</label>
+                    {{ form_no_serializado.anaquel_destino }}
+                    {{ form_no_serializado.anaquel_destino.errors }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Observación</label>
+                {{ form_no_serializado.observacion }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrar ingreso</button>
+        </form>
+
+        <!-- ===================== FORM: SERIALIZADO ===================== -->
+        <form method="post" enctype="multipart/form-data" id="form-serializado" class="ingreso-seccion d-none">
+            {% csrf_token %}
+            <input type="hidden" name="tipo_ingreso" value="serializado">
+
+            <div class="mb-4">
+                <label class="form-label">Repuesto (serializado)</label>
+                {{ form_repuesto_serializado.repuesto }}
+                {{ form_repuesto_serializado.repuesto.errors }}
+            </div>
+
+            {{ formset_unidades.management_form }}
+
+            <div id="unidades-container">
+                {% for unidad_form in formset_unidades %}
+                    <div class="unidad-bloque card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0">Unidad</h6>
+                                {% if forloop.counter0 > 0 %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-quitar-unidad">Quitar</button>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Anaquel</label>
+                                    {{ unidad_form.anaquel }}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Foto frontal</label>
+                                    {{ unidad_form.foto_frontal }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Foto trasera</label>
+                                    {{ unidad_form.foto_trasera }}
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label">Observación</label>
+                                {{ unidad_form.observacion }}
+                            </div>
+
+                            {% if unidad_form.DELETE %}
+                                <div class="d-none">{{ unidad_form.DELETE }}</div>
+                            {% endif %}
+
+                            {{ unidad_form.errors }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" id="btn-agregar-unidad" class="btn btn-outline-secondary mb-4">
+                + Agregar unidad
+            </button>
+
+            <div>
+                <button type="submit" class="btn btn-primary">Registrar unidades</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Plantilla oculta para clonar bloques nuevos del formset -->
+<template id="unidad-empty-template">
+    <div class="unidad-bloque card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Unidad</h6>
+                <button type="button" class="btn btn-sm btn-outline-danger btn-quitar-unidad">Quitar</button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Anaquel</label>
+                    {{ formset_unidades.empty_form.anaquel }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Foto frontal</label>
+                    {{ formset_unidades.empty_form.foto_frontal }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Foto trasera</label>
+                    {{ formset_unidades.empty_form.foto_trasera }}
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label">Observación</label>
+                {{ formset_unidades.empty_form.observacion }}
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/ingresos_repuesto.js' %}"></script>
+{% endblock %}

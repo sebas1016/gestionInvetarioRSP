@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Eliminar repuesto{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header__title">Eliminar repuesto</h1>
+</div>
+
+<div class="card" style="max-width: 560px;">
+    <div class="card-body">
+        <p>¿Confirmas eliminar el repuesto <strong>{{ repuesto }}</strong>?</p>
+        <p class="text-muted">
+            Esto solo es posible si el repuesto no tiene unidades ni movimientos registrados.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            <a href="{% url 'repuesto_detail' repuesto.pk %}" class="btn btn-link">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

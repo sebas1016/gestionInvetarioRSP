@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Editar tipo{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header__title">Editar tipo de repuesto</h1>
+</div>
+{% include "almacen/configuracion/_subnav.html" %}
+<div class="card" style="max-width: 480px;">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                {{ form.nombre }}
+                {{ form.nombre.errors }}
+            </div>
+            <div class="form-check mb-3">
+                {{ form.es_serializado }}
+                <label class="form-check-label" for="{{ form.es_serializado.id_for_label }}">
+                    Es serializado (unidades individuales)
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a href="{% url 'tipo_list' %}" class="btn btn-link">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,398 @@
+:root{
+
+    --sidebar-width:260px;
+
+    --primary:#2563EB;
+
+    --sidebar:#1F2937;
+
+    --background:#F5F7FA;
+
+    --card:#FFFFFF;
+
+    --border:#E5E7EB;
+
+    --text:#111827;
+
+    --text-light:#6B7280;
+
+    --success:#16A34A;
+
+    --warning:#F59E0B;
+
+    --danger:#DC2626;
+
+    --radius:12px;
+
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:var(--background);
+
+}
+
+.app-layout{
+
+    display:flex;
+
+    min-height:100vh;
+
+}
+
+.main-content{
+
+    flex:1;
+    margin-left:270px;
+
+}
+
+.sidebar{
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    width:270px;
+
+    height:100vh;
+
+    background:var(--sidebar-bg);
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.sidebar-header{
+
+    padding:25px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.sidebar-logo{
+
+    width:52px;
+
+}
+
+.sidebar-title{
+
+    margin:0;
+
+    font-weight:600;
+
+}
+
+.sidebar-version{
+
+    color:#9CA3AF;
+
+}
+
+.sidebar-menu{
+
+    flex:1;
+
+    padding:20px 15px;
+
+}
+
+.sidebar-menu ul{
+
+    list-style:none;
+
+    padding:0;
+
+    margin:0;
+
+}
+
+.sidebar-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:14px 16px;
+
+    color:#D1D5DB;
+
+    border-radius:12px;
+
+    transition:
+        background .25s,
+        color .25s,
+        transform .2s;
+
+
+}
+
+.sidebar-link:hover{
+
+    background:var(--sidebar-hover);
+    transform:translateX(4px);
+    color:white;
+
+}
+
+.sidebar-link.active{
+
+    background:var(--primary);
+
+    color:white;
+
+}
+
+.sidebar-link i{
+
+    font-size:1.2rem;
+
+}
+
+.sidebar-footer{
+
+    padding:20px;
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+}
+
+.status{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+    font-size:.9rem;
+
+}
+
+.status-dot{
+
+    width:10px;
+
+    height:10px;
+
+    border-radius:50%;
+
+    background:#22C55E;
+
+}
+
+.user-info{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.user-info i{
+
+    font-size:2rem;
+
+}
+
+/*==========================
+    NAVBAR
+==========================*/
+
+.navbar-custom{
+
+    height:80px;
+
+    background:white;
+
+    border-bottom:1px solid var(--border);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 30px;
+
+}
+
+.page-title{
+
+    margin:0;
+
+    font-size:1.4rem;
+
+    font-weight:600;
+
+    color:var(--text);
+
+}
+
+.breadcrumb-custom{
+
+    font-size:.85rem;
+
+    color:var(--text-light);
+
+    margin-top:5px;
+
+}
+
+
+.navbar-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+.search-form{
+
+    position:relative;
+
+}
+
+.search-form i{
+
+    position:absolute;
+
+    left:15px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:gray;
+
+}
+
+.search-input{
+
+    width:280px;
+
+    border:none;
+
+    background:#F3F4F6;
+
+    border-radius:30px;
+
+    padding:10px 20px 10px 42px;
+
+    outline:none;
+
+}
+
+.search-input:focus{
+
+    background:white;
+
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+
+}
+
+.notification-btn{
+
+    border:none;
+
+    background:white;
+
+    font-size:1.2rem;
+
+    cursor:pointer;
+
+}
+
+.user-dropdown{
+
+    border:none;
+
+    background:white;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    cursor:pointer;
+
+}
+
+.user-dropdown .bi-person-circle{
+
+    font-size:2rem;
+
+    color:var(--primary);
+
+}
+
+.page-description{
+
+    color:var(--text-light);
+
+    font-size:.9rem;
+
+    margin-top:4px;
+
+}
+.breadcrumb-custom{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-top:8px;
+
+    font-size:.85rem;
+
+}
+
+.breadcrumb-custom a{
+
+    color:var(--primary);
+
+    text-decoration:none;
+
+}
+
+.breadcrumb-separator{
+
+    font-size:.7rem;
+
+    color:#9CA3AF;
+
+}
+
+.breadcrumb-custom span{
+
+    color:var(--text-light);
+
+}

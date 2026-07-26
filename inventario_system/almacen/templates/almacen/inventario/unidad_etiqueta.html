@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Etiqueta {{ unidad.codigo_unico }}</title>
+    <link rel="stylesheet" href="{% static 'core/css/unidad_etiqueta.css' %}">
+</head>
+<body>
+
+    <div class="etiqueta">
+        <p class="etiqueta__titulo">{{ unidad.repuesto }}</p>
+        <p class="etiqueta__subtitulo">{{ unidad.repuesto.referencia }}</p>
+
+        {% if unidad.imagen_codigo_barras %}
+            <img src="{{ unidad.imagen_codigo_barras.url }}" alt="Código de barras {{ unidad.codigo_unico }}">
+        {% else %}
+            <p style="color:#6c7a89;">Sin código de barras generado.</p>
+        {% endif %}
+
+        <p class="etiqueta__codigo">{{ unidad.codigo_unico }}</p>
+        <p class="etiqueta__anaquel">Anaquel: {{ unidad.anaquel.codigo }}</p>
+    </div>
+
+    <div class="acciones">
+        <button type="button" class="btn-imprimir" onclick="window.print()">Imprimir etiqueta</button>
+    </div>
+
+</body>
+</html>
