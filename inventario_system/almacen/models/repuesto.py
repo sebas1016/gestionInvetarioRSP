@@ -27,10 +27,15 @@ class Repuesto(models.Model):
 
     referencia=models.CharField(
         max_length=100,
-        unique=True
+        unique=False,
+        blank=True,
+        null=True
     )
 
-    descripcion=models.TextField()
+    descripcion=models.TextField(
+        blank=True,
+        null=True
+    )
     
     stock_actual=models.PositiveIntegerField(
         default=0

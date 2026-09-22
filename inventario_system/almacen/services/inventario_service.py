@@ -187,13 +187,33 @@ class InventarioService:
     @staticmethod
     @transaction.atomic
     def crear_repuesto(datos_validados):
+        datos_validados = dict(datos_validados)
+        codigo_manual = datos_validados.pop("codigo_barras", None)
+
         repuesto = Repuesto.objects.create(**datos_validados)
 
-        codigo = CodigoService.generar_codigo_unico("RP")
-        repuesto.codigo_barras = codigo
+        repuesto.codigo_barras = codigo_manual or CodigoService.generar_codigo_unico("RP")
         repuesto.save(update_fields=["codigo_barras"])
 
         BarcodeService.generar_codigo_barras(repuesto, "codigo_barras", "imagen_codigo_barras")
+        return repuesto
+
+    @staticmethod
+    @transaction.atomic
+    def actualizar_repuesto(repuesto, datos_validados):
+        codigo_anterior = repuesto.codigo_barras
+
+        for campo, valor in datos_validados.items():
+            if campo == "codigo_barras":
+                continue
+            setattr(repuesto, campo, valor)
+
+        repuesto.codigo_barras = datos_validados.get("codigo_barras") or CodigoService.generar_codigo_unico("RP")
+        repuesto.save()
+
+        if repuesto.codigo_barras != codigo_anterior:
+            BarcodeService.generar_codigo_barras(repuesto, "codigo_barras", "imagen_codigo_barras")
+
         return repuesto
 
     @staticmethod

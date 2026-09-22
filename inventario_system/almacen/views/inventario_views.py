@@ -120,7 +120,7 @@ def repuesto_edit(request, pk):
     repuesto = get_object_or_404(Repuesto, pk=pk)
     form = RepuestoForm(request.POST or None, instance=repuesto)
     if request.method == "POST" and form.is_valid():
-        form.save()
+        InventarioService.actualizar_repuesto(repuesto, form.cleaned_data)
         messages.success(request, "Repuesto actualizado correctamente.")
         return redirect("repuesto_detail", pk=repuesto.pk)
     return render(

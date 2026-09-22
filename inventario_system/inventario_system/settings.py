@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7$m%a(vwv32ttl_69%rngll(%+m+d*ab(3@*oz1r%&i!r0f94x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE':'django.db.backends.postgresql',
         'NAME':'inventario_db',
         'USER':'postgres',
-        'PASSWORD':'1234',
+        'PASSWORD':'123456',
         'HOST':'localhost',
         'PORT':'5432'
     }
@@ -127,9 +127,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "core/static",
-]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL='/media/'
 
