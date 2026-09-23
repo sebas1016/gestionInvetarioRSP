@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Registrar salida{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/searchable_select.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -81,4 +86,12 @@
         </div>
     </div>
 {% endif %}
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'core/js/searchable_select.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        attachSearchableSelect("id_anaquel_origen", { placeholder: "Buscar anaquel..." });
+    });
+</script>
 {% endblock %}

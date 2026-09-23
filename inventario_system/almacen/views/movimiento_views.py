@@ -143,7 +143,10 @@ def salida(request):
                 return redirect("salida")
 
     elif tipo_encontrado == "repuesto":
-        form = SalidaNoSerializadoForm()
+        anaquel_sugerido = InventarioService.obtener_anaquel_sugerido(objeto_encontrado)
+        form = SalidaNoSerializadoForm(
+            initial={"anaquel_origen": anaquel_sugerido} if anaquel_sugerido else None
+        )
     elif tipo_encontrado == "unidad":
         form = SalidaSerializadoForm()
 
