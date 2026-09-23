@@ -1,0 +1,42 @@
+.ss-wrapper {
+    position: relative;
+}
+
+.ss-native-select {
+    display: none;
+}
+
+.ss-dropdown {
+    position: absolute;
+    z-index: 1000;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin-top: 2px;
+}
+
+.ss-item {
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.ss-item:hover,
+.ss-item.is-active {
+    background-color: #e9ecef;
+}
+
+.ss-item--empty {
+    color: #6c757d;
+    cursor: default;
+}
+
+.ss-item--empty:hover {
+    background-color: transparent;
+}

@@ -12,6 +12,8 @@ from ..models import Marca, TipoRepuesto, Repuesto, Modelo, Anaquel
 from ..services.inventario_service import InventarioService
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.http import JsonResponse
+
 def ingreso_repuesto(request):
     tipo_ingreso = request.POST.get("tipo_ingreso", "no_serializado")
 
@@ -118,9 +120,15 @@ def repuesto_create(request):
 
 def repuesto_edit(request, pk):
     repuesto = get_object_or_404(Repuesto, pk=pk)
+    # Se captura ANTES de instanciar el form: al llamar a form.is_valid(),
+    # Django ya escribe los datos nuevos sobre esta misma instancia
+    # (construct_instance), así que si se captura después, "anterior" y
+    # "nuevo" siempre quedarían iguales y nunca se detectaría el cambio.
+    codigo_anterior = repuesto.codigo_barras
+
     form = RepuestoForm(request.POST or None, instance=repuesto)
     if request.method == "POST" and form.is_valid():
-        InventarioService.actualizar_repuesto(repuesto, form.cleaned_data)
+        InventarioService.actualizar_repuesto(repuesto, form.cleaned_data, codigo_anterior)
         messages.success(request, "Repuesto actualizado correctamente.")
         return redirect("repuesto_detail", pk=repuesto.pk)
     return render(
@@ -141,6 +149,15 @@ def repuesto_delete(request, pk):
             return redirect("repuesto_detail", pk=repuesto.pk)
     return render(request, "almacen/inventario/repuesto_confirm_delete.html", {"repuesto": repuesto})
 
+#--Sugerencia de anaquel para un repuesto (usado en el form de ingreso)
+def anaquel_sugerido(request, repuesto_id):
+    repuesto = get_object_or_404(Repuesto, pk=repuesto_id)
+    anaquel = InventarioService.obtener_anaquel_sugerido(repuesto)
+    return JsonResponse({
+        "anaquel_id": anaquel.pk if anaquel else None,
+        "anaquel_codigo": anaquel.codigo if anaquel else None,
+    })
+
 #--Buscar por codigo de barras
 def buscar_por_codigo(request):
     codigo = request.GET.get("codigo", "").strip()
@@ -158,3 +175,4 @@ def buscar_por_codigo(request):
 
     messages.error(request, f"No se encontró ningún repuesto o unidad con el código '{codigo}'.")
     return redirect("repuesto_list")
+

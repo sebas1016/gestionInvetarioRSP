@@ -3,6 +3,10 @@
 
 {% block title %}Ingreso de repuesto{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/searchable_select.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <h1 class="page-header__title">Ingreso de repuesto</h1>
@@ -15,7 +19,8 @@
     {% endfor %}
 {% endif %}
 
-<div class="card ingreso-card">
+<div class="card ingreso-card"
+    data-anaquel-sugerido-url="{% url 'anaquel_sugerido' repuesto_id=999999 %}">
     <div class="card-body">
 
         <div class="btn-group mb-4" role="group" aria-label="Tipo de ingreso">
@@ -164,5 +169,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'core/js/searchable_select.js' %}"></script>
 <script src="{% static 'core/js/ingresos_repuesto.js' %}"></script>
 {% endblock %}

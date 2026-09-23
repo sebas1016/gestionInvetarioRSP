@@ -17,6 +17,7 @@ urlpatterns=[
     path("unidades/<int:pk>/", historial_views.unidad_detail, name="unidad_detail"),
     # almacen/urls.py
     path("ingreso/",ingreso_repuesto, name="ingreso_repuesto"),
+    path("ingreso/anaquel-sugerido/<int:repuesto_id>/", inventario_views.anaquel_sugerido, name="anaquel_sugerido"),
     path("repuestos/", repuesto_list, name="repuesto_list"),
     path("repuestos/<int:pk>/", repuesto_detail, name="repuesto_detail"),
     #--Configuracion

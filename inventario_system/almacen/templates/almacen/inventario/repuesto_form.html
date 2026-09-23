@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{% if modo == "crear" %}Nuevo repuesto{% else %}Editar repuesto{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/searchable_select.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -68,4 +73,13 @@
         </form>
     </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'core/js/searchable_select.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        attachSearchableSelect("id_modelo", { placeholder: "Buscar modelo..." });
+        attachSearchableSelect("id_tipo", { placeholder: "Buscar tipo..." });
+    });
+</script>
 {% endblock %}

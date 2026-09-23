@@ -200,9 +200,7 @@ class InventarioService:
 
     @staticmethod
     @transaction.atomic
-    def actualizar_repuesto(repuesto, datos_validados):
-        codigo_anterior = repuesto.codigo_barras
-
+    def actualizar_repuesto(repuesto, datos_validados, codigo_anterior):
         for campo, valor in datos_validados.items():
             if campo == "codigo_barras":
                 continue
@@ -215,7 +213,22 @@ class InventarioService:
             BarcodeService.generar_codigo_barras(repuesto, "codigo_barras", "imagen_codigo_barras")
 
         return repuesto
-
+    
+    @staticmethod
+    def obtener_anaquel_sugerido(repuesto):
+        """
+        Devuelve el último anaquel_destino usado en un movimiento de ENTRADA
+        para este repuesto, como sugerencia de "dónde está" normalmente.
+        None si el repuesto nunca ha tenido un ingreso registrado.
+        """
+        ultimo_movimiento = (
+            MovimientoInventario.objects
+            .filter(repuesto=repuesto, anaquel_destino__isnull=False)
+            .order_by("-fecha")
+            .first()
+        )
+        return ultimo_movimiento.anaquel_destino if ultimo_movimiento else None
+    
     @staticmethod
     def buscar_por_codigo(codigo):
         """
@@ -231,3 +244,5 @@ class InventarioService:
             return "repuesto", repuesto
 
         return None, None
+    
+    
