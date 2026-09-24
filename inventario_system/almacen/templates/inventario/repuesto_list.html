@@ -48,7 +48,7 @@
                     <th>Marca</th>
                     <th>Modelo</th>
                     <th>Tipo</th>
-                    <th>Referencia</th>
+                    <th>Anaquel</th>
                     <th>Stock</th>
                     <th></th>
                 </tr>
@@ -59,12 +59,11 @@
                         <td>{{ repuesto.modelo.marca.nombre }}</td>
                         <td>{{ repuesto.modelo.nombre }}</td>
                         <td>{{ repuesto.tipo.nombre }}</td>
-                        <td>{{ repuesto.referencia }}</td>
                         <td>
-                            {% if repuesto.stock <= repuesto.stock_minimo %}
-                                <span class="badge bg-danger">{{ repuesto.stock }}</span>
+                            {% if repuesto.anaquel_actual %}
+                                <span class="badge bg-light text-dark border">{{ repuesto.anaquel_actual }}</span>
                             {% else %}
-                                <span class="badge bg-secondary">{{ repuesto.stock }}</span>
+                                <span class="text-muted">—</span>
                             {% endif %}
                         </td>
                         <td>

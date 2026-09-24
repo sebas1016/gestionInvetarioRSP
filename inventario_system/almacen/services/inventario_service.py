@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, OuterRef, Subquery
 from ..models import Repuesto, UnidadRepuesto, MovimientoInventario, ComponenteRetirado
 from .codigo_service import CodigoService
 from .barcode_service import BarcodeService
@@ -102,9 +102,17 @@ class InventarioService:
     """
     @staticmethod
     def listar_repuestos(marca_id=None, tipo_id=None, busqueda=""):
+        ultimo_anaquel = (
+            MovimientoInventario.objects
+            .filter(repuesto=OuterRef("pk"), anaquel_destino__isnull=False)
+            .order_by("-fecha")
+            .values("anaquel_destino__codigo")[:1]
+        )
+
         qs = (
             Repuesto.objects
             .select_related("modelo__marca", "tipo")
+            .annotate(anaquel_actual=Subquery(ultimo_anaquel))
             .order_by("modelo__marca__nombre", "modelo__nombre", "referencia")
         )
 

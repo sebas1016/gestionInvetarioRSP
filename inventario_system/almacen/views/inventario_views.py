@@ -187,7 +187,7 @@ def buscar_por_codigo(request):
     if not codigo:
         messages.error(request, "Debes ingresar o escanear un código.")
         return redirect("repuesto_list")
-    codigo = codigo.upper()  # Convertir a mayúsculas para la búsqueda
+    codigo = codigo
     tipo, objeto = InventarioService.buscar_por_codigo(codigo)
 
     if tipo == "unidad":

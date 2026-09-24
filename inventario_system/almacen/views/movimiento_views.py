@@ -107,7 +107,7 @@ def salida(request):
     form = None
 
     if codigo:
-        codigo = codigo.upper()  # Convertir a mayúsculas para la búsqueda
+        codigo = codigo
         tipo_encontrado, objeto_encontrado = InventarioService.buscar_por_codigo(codigo)
 
         if tipo_encontrado is None:
