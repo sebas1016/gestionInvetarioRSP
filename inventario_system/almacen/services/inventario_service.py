@@ -10,17 +10,37 @@ from django.core.exceptions import ValidationError
 class InventarioService:
 
     @staticmethod
+    @transaction.atomic
     def eliminar_repuesto(repuesto):
-        tiene_unidades = repuesto.unidades.exists()
-        tiene_movimientos = MovimientoInventario.objects.filter(repuesto=repuesto).exists()
+        """
+        Elimina un repuesto de forma DEFINITIVA e IRREVERSIBLE, exista o no
+        stock, unidades o historial de movimientos asociado.
 
-        if tiene_unidades or tiene_movimientos:
-            raise ValidationError(
-                "No se puede eliminar este repuesto porque ya tiene unidades o "
-                "movimientos registrados. Esa información no se puede perder."
-            )
+        Junto con el repuesto se eliminan en cascada (a nivel de base de
+        datos): sus movimientos de inventario, sus unidades (si es
+        serializado) y, de esas unidades, sus fotos y componentes retirados.
+        Además, se borran del almacenamiento todas las imágenes relacionadas
+        (código de barras del repuesto, de cada unidad, y las fotos
+        frontal/trasera de cada unidad), para no dejar archivos huérfanos.
+        """
+        archivos_a_borrar = []
+
+        if repuesto.imagen_codigo_barras:
+            archivos_a_borrar.append(repuesto.imagen_codigo_barras)
+
+        for unidad in repuesto.unidades.all():
+            if unidad.imagen_codigo_barras:
+                archivos_a_borrar.append(unidad.imagen_codigo_barras)
+            for foto in unidad.fotos.all():
+                if foto.frontal:
+                    archivos_a_borrar.append(foto.frontal)
+                if foto.trasera:
+                    archivos_a_borrar.append(foto.trasera)
 
         repuesto.delete()
+
+        for archivo in archivos_a_borrar:
+            archivo.storage.delete(archivo.name)
         
   
     @staticmethod

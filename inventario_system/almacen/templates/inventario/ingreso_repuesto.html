@@ -10,7 +10,7 @@
 {% block content %}
 <div class="page-header">
     <h1 class="page-header__title">Ingreso de repuesto</h1>
-    <p class="page-header__subtitle">Registra entrada de stock o unidades serializadas al almacén.</p>
+    <p class="page-header__subtitle">Elige el repuesto: el formulario de stock o de unidades aparece automáticamente según su tipo.</p>
 </div>
 
 {% if messages %}
@@ -20,59 +20,43 @@
 {% endif %}
 
 <div class="card ingreso-card"
-    data-anaquel-sugerido-url="{% url 'anaquel_sugerido' repuesto_id=999999 %}">
+     data-anaquel-sugerido-url="{% url 'anaquel_sugerido' repuesto_id=999999 %}">
     <div class="card-body">
 
-        <div class="btn-group mb-4" role="group" aria-label="Tipo de ingreso">
-            <input type="radio" class="btn-check" name="tipo_ingreso_selector" id="opt-no-serializado" checked>
-            <label class="btn btn-outline-primary" for="opt-no-serializado">Repuesto con stock</label>
-
-            <input type="radio" class="btn-check" name="tipo_ingreso_selector" id="opt-serializado">
-            <label class="btn btn-outline-primary" for="opt-serializado">Unidades serializadas</label>
+        <div class="mb-4">
+            <label class="form-label">Repuesto</label>
+            {{ form_repuesto.repuesto }}
+            {{ form_repuesto.repuesto.errors }}
         </div>
 
-        <!-- ===================== FORM: NO SERIALIZADO ===================== -->
-        <form method="post" id="form-no-serializado" class="ingreso-seccion">
+        <!-- ===================== FORM: NO SERIALIZADO (stock por cantidad) ===================== -->
+        <form method="post" id="form-no-serializado" class="ingreso-seccion d-none">
             {% csrf_token %}
-            <input type="hidden" name="tipo_ingreso" value="no_serializado">
-
-            <div class="mb-3">
-                <label class="form-label">Repuesto</label>
-                {{ form_no_serializado.repuesto }}
-                {{ form_no_serializado.repuesto.errors }}
-            </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Cantidad</label>
-                    {{ form_no_serializado.cantidad }}
-                    {{ form_no_serializado.cantidad.errors }}
+                    {{ form_detalle.cantidad }}
+                    {{ form_detalle.cantidad.errors }}
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Anaquel destino</label>
-                    {{ form_no_serializado.anaquel_destino }}
-                    {{ form_no_serializado.anaquel_destino.errors }}
+                    {{ form_detalle.anaquel_destino }}
+                    {{ form_detalle.anaquel_destino.errors }}
                 </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Observación</label>
-                {{ form_no_serializado.observacion }}
+                {{ form_detalle.observacion }}
             </div>
 
             <button type="submit" class="btn btn-primary">Registrar ingreso</button>
         </form>
 
-        <!-- ===================== FORM: SERIALIZADO ===================== -->
+        <!-- ===================== FORM: SERIALIZADO (unidades individuales) ===================== -->
         <form method="post" enctype="multipart/form-data" id="form-serializado" class="ingreso-seccion d-none">
             {% csrf_token %}
-            <input type="hidden" name="tipo_ingreso" value="serializado">
-
-            <div class="mb-4">
-                <label class="form-label">Repuesto (serializado)</label>
-                {{ form_repuesto_serializado.repuesto }}
-                {{ form_repuesto_serializado.repuesto.errors }}
-            </div>
 
             {{ formset_unidades.management_form }}
 

@@ -1,28 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const optNoSerializado = document.getElementById("opt-no-serializado");
-    const optSerializado = document.getElementById("opt-serializado");
+    const selectRepuesto = document.getElementById("id_repuesto");
     const formNoSerializado = document.getElementById("form-no-serializado");
     const formSerializado = document.getElementById("form-serializado");
 
-    function actualizarVisibilidad() {
-        if (optSerializado.checked) {
-            formNoSerializado.classList.add("d-none");
-            formSerializado.classList.remove("d-none");
-        } else {
-            formSerializado.classList.add("d-none");
-            formNoSerializado.classList.remove("d-none");
-        }
-    }
+    // ---- Cuadro de búsqueda integrado en el select de repuesto ----
+    attachSearchableSelect(selectRepuesto, { placeholder: "Buscar repuesto..." });
 
-    optNoSerializado.addEventListener("change", actualizarVisibilidad);
-    optSerializado.addEventListener("change", actualizarVisibilidad);
-    actualizarVisibilidad();
-
-    // ---- Cuadro de búsqueda integrado en los selects de repuesto ----
-    attachSearchableSelect("id_ns-repuesto", { placeholder: "Buscar repuesto..." });
-    attachSearchableSelect("id_s-repuesto", { placeholder: "Buscar repuesto..." });
-
-    // ---- Cuadro de búsqueda integrado en el select de anaquel (no serializado) ----
+    // ---- Cuadro de búsqueda en el anaquel del form no-serializado ----
     attachSearchableSelect("id_ns-anaquel_destino", { placeholder: "Buscar anaquel..." });
 
     // ---- Cuadro de búsqueda en los anaqueles de unidades serializadas ----
@@ -33,6 +17,33 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     initBusquedaAnaquelesUnidades(document);
+
+    // ---- Mostrar automáticamente el panel que corresponde según el repuesto elegido ----
+    // Cada <option> del select trae data-serializado="true"/"false" (ver
+    // RepuestoConTipoSelect en forms/ingreso_forms.py), así el navegador no
+    // necesita preguntarle nada al usuario: ya sabe qué tipo de repuesto es.
+    function actualizarPanelSegunRepuesto() {
+        const opcion = selectRepuesto.options[selectRepuesto.selectedIndex];
+        const esSerializado = opcion ? opcion.dataset.serializado : undefined;
+
+        if (esSerializado === "true") {
+            formSerializado.classList.remove("d-none");
+            formNoSerializado.classList.add("d-none");
+            selectRepuesto.setAttribute("form", "form-serializado");
+        } else if (esSerializado === "false") {
+            formNoSerializado.classList.remove("d-none");
+            formSerializado.classList.add("d-none");
+            selectRepuesto.setAttribute("form", "form-no-serializado");
+        } else {
+            // Sin repuesto elegido todavía: no se muestra ningún panel.
+            formNoSerializado.classList.add("d-none");
+            formSerializado.classList.add("d-none");
+            selectRepuesto.removeAttribute("form");
+        }
+    }
+
+    selectRepuesto.addEventListener("change", actualizarPanelSegunRepuesto);
+    actualizarPanelSegunRepuesto(); // por si vuelve con errores de validación y un repuesto ya elegido
 
     // ---- Auto-selección del anaquel destino según el último ingreso del repuesto ----
     const cardIngreso = document.querySelector(".ingreso-card");
@@ -66,38 +77,29 @@ document.addEventListener("DOMContentLoaded", function () {
         select.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
-    // -- Repuesto con stock (no serializado): selecciona anaquel_destino --
-    const selectRepuestoNS = document.getElementById("id_ns-repuesto");
     const selectAnaquelDestino = document.getElementById("id_ns-anaquel_destino");
-
-    if (selectRepuestoNS && selectAnaquelDestino) {
-        selectRepuestoNS.addEventListener("change", function () {
-            aplicarAnaquelSugerido(this.value, function (anaquelId) {
-                fijarValorAnaquel(selectAnaquelDestino, anaquelId);
-            });
-        });
-    }
-
-    // -- Unidades serializadas: sugiere el anaquel de cada unidad nueva --
-    const selectRepuestoS = document.getElementById("id_s-repuesto");
-    let anaquelSugeridoSerializado = null;
+    let anaquelSugeridoActual = null;
 
     function aplicarSugerenciaAUnidadesVisibles() {
-        if (!anaquelSugeridoSerializado) return;
+        if (!anaquelSugeridoActual) return;
         document.querySelectorAll('select[id^="id_unidades-"][id$="-anaquel"]').forEach((select) => {
-            fijarValorAnaquel(select, anaquelSugeridoSerializado);
+            fijarValorAnaquel(select, anaquelSugeridoActual);
         });
     }
 
-    if (selectRepuestoS) {
-        selectRepuestoS.addEventListener("change", function () {
-            const repuestoId = this.value;
-            aplicarAnaquelSugerido(repuestoId, function (anaquelId) {
-                anaquelSugeridoSerializado = anaquelId;
-                aplicarSugerenciaAUnidadesVisibles();
-            });
+    selectRepuesto.addEventListener("change", function () {
+        const repuestoId = this.value;
+        anaquelSugeridoActual = null;
+
+        aplicarAnaquelSugerido(repuestoId, function (anaquelId) {
+            anaquelSugeridoActual = anaquelId;
+
+            if (selectAnaquelDestino) {
+                fijarValorAnaquel(selectAnaquelDestino, anaquelId);
+            }
+            aplicarSugerenciaAUnidadesVisibles();
         });
-    }
+    });
 
     // ---- Formset dinámico de unidades ----
     const container = document.getElementById("unidades-container");
@@ -127,8 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
     container.addEventListener("click", function (event) {
         if (event.target.classList.contains("btn-quitar-unidad")) {
             event.target.closest(".unidad-bloque").remove();
-            // Nota: no se reindexan los forms restantes; Django tolera huecos
-            // en los índices siempre y cuando TOTAL_FORMS sea >= al índice más alto presente.
         }
     });
 });

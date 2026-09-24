@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
 from ..forms.ingreso_forms import (
-    IngresoNoSerializadoForm,
-    RepuestoSerializadoSelectForm,
-    UnidadIngresoFormSet, 
+    IngresoRepuestoForm,
+    IngresoNoSerializadoDetalleForm,
+    UnidadIngresoFormSet,
 )
 from ..forms import *
 from ..services import *
@@ -14,47 +14,63 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.http import JsonResponse
 
-def ingreso_repuesto(request):
-    tipo_ingreso = request.POST.get("tipo_ingreso", "no_serializado")
+from ..forms.ingreso_forms import (
+    IngresoRepuestoForm,
+    IngresoNoSerializadoDetalleForm,
+    UnidadIngresoFormSet,
+)
+from ..forms import *
+from ..services import *
+from ..models import Marca, TipoRepuesto, Repuesto, Modelo, Anaquel, MovimientoInventario
+from ..services.inventario_service import InventarioService
+from django.core.exceptions import ValidationError
+from django.urls import reverse
+from django.http import JsonResponse
 
-    form_no_serializado = IngresoNoSerializadoForm(prefix="ns")
-    form_repuesto_serializado = RepuestoSerializadoSelectForm(prefix="s")
+def ingreso_repuesto(request):
+    form_repuesto = IngresoRepuestoForm(request.POST or None)
+    form_detalle = IngresoNoSerializadoDetalleForm(prefix="ns")
     formset_unidades = UnidadIngresoFormSet(prefix="unidades")
 
-    if request.method == "POST":
-        if tipo_ingreso == "no_serializado":
-            form_no_serializado = IngresoNoSerializadoForm(request.POST, prefix="ns")
-            if form_no_serializado.is_valid():
-                InventarioService.registrar_ingreso_no_serializado(
-                    repuesto=form_no_serializado.cleaned_data["repuesto"],
-                    cantidad=form_no_serializado.cleaned_data["cantidad"],
-                    anaquel_destino=form_no_serializado.cleaned_data["anaquel_destino"],
-                    usuario=request.user,
-                    observacion=form_no_serializado.cleaned_data["observacion"],
-                )
-                messages.success(request, "Ingreso registrado correctamente.")
-                return redirect("ingreso_repuesto")
+    if request.method == "POST" and form_repuesto.is_valid():
+        repuesto = form_repuesto.cleaned_data["repuesto"]
 
-        else:  # serializado
-            form_repuesto_serializado = RepuestoSerializadoSelectForm(request.POST, prefix="s")
+        # El tipo de ingreso lo decide el propio repuesto (repuesto.tipo.es_serializado),
+        # nunca un dato que haya mandado el navegador: así, aunque el JS falle o alguien
+        # manipule el formulario, jamás se puede registrar un repuesto serializado como
+        # stock por cantidad (o viceversa).
+        if repuesto.tipo.es_serializado:
             formset_unidades = UnidadIngresoFormSet(request.POST, request.FILES, prefix="unidades")
 
-            if form_repuesto_serializado.is_valid() and formset_unidades.is_valid():
+            if formset_unidades.is_valid():
                 unidades_data = [
                     f.cleaned_data for f in formset_unidades
                     if f.cleaned_data and not f.cleaned_data.get("DELETE")
                 ]
                 InventarioService.registrar_ingreso_serializado(
-                    repuesto=form_repuesto_serializado.cleaned_data["repuesto"],
+                    repuesto=repuesto,
                     unidades_data=unidades_data,
                     usuario=request.user,
                 )
                 messages.success(request, "Unidades ingresadas correctamente.")
                 return redirect("ingreso_repuesto")
 
+        else:
+            form_detalle = IngresoNoSerializadoDetalleForm(request.POST, prefix="ns")
+            if form_detalle.is_valid():
+                InventarioService.registrar_ingreso_no_serializado(
+                    repuesto=repuesto,
+                    cantidad=form_detalle.cleaned_data["cantidad"],
+                    anaquel_destino=form_detalle.cleaned_data["anaquel_destino"],
+                    usuario=request.user,
+                    observacion=form_detalle.cleaned_data["observacion"],
+                )
+                messages.success(request, "Ingreso registrado correctamente.")
+                return redirect("ingreso_repuesto")
+
     context = {
-        "form_no_serializado": form_no_serializado,
-        "form_repuesto_serializado": form_repuesto_serializado,
+        "form_repuesto": form_repuesto,
+        "form_detalle": form_detalle,
         "formset_unidades": formset_unidades,
     }
     return render(request, "inventario/ingreso_repuesto.html", context)
@@ -147,7 +163,13 @@ def repuesto_delete(request, pk):
         except ValidationError as error:
             messages.error(request, error.message)
             return redirect("repuesto_detail", pk=repuesto.pk)
-    return render(request, "almacen/inventario/repuesto_confirm_delete.html", {"repuesto": repuesto})
+
+    context = {
+        "repuesto": repuesto,
+        "total_unidades": repuesto.unidades.count(),
+        "total_movimientos": MovimientoInventario.objects.filter(repuesto=repuesto).count(),
+    }
+    return render(request, "almacen/inventario/repuesto_confirm_delete.html", context)
 
 #--Sugerencia de anaquel para un repuesto (usado en el form de ingreso)
 def anaquel_sugerido(request, repuesto_id):

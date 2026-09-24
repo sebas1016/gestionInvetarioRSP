@@ -1,7 +1,7 @@
 :root {
     --color-dark: #24374b;
     --color-dark-soft: #2f4560;
-    --color-gold: #f1c40f;
+    --color-gold: #5135f0;
     --color-light: #f5f5f5;
     --color-text-muted: #6c7a89;
     --sidebar-width: 240px;
@@ -41,7 +41,7 @@ body {
 
 .app-sidebar__brand-mark {
     background-color: var(--color-gold);
-    color: var(--color-dark);
+    color: var(--color-light);
     font-weight: 700;
     width: 32px;
     height: 32px;
