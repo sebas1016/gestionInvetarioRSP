@@ -6,6 +6,7 @@ from ..forms.ingreso_forms import (
     IngresoNoSerializadoDetalleForm,
     UnidadIngresoFormSet,
 )
+from urllib.parse import quote
 from ..forms import *
 from ..services import *
 from ..models import Marca, TipoRepuesto, Repuesto, Modelo, Anaquel
@@ -180,21 +181,23 @@ def anaquel_sugerido(request, repuesto_id):
         "anaquel_codigo": anaquel.codigo if anaquel else None,
     })
 
-#--Buscar por codigo de barras
+#--Buscar por codigo de barras (o, si no coincide con ninguno, busqueda general)
 def buscar_por_codigo(request):
-    codigo = request.GET.get("codigo", "").strip()
-   
-    if not codigo:
-        messages.error(request, "Debes ingresar o escanear un código.")
+    texto = request.GET.get("codigo", "").strip()
+
+    if not texto:
+        messages.error(request, "Debes ingresar un texto o código a buscar.")
         return redirect("repuesto_list")
-    codigo = codigo
-    tipo, objeto = InventarioService.buscar_por_codigo(codigo)
+
+    tipo, objeto = InventarioService.buscar_por_codigo(texto.upper())
 
     if tipo == "unidad":
         return redirect("unidad_detail", pk=objeto.pk)
     if tipo == "repuesto":
         return redirect("repuesto_detail", pk=objeto.pk)
 
-    messages.error(request, f"No se encontró ningún repuesto o unidad con el código '{codigo}'.")
-    return redirect("repuesto_list")
+    # No coincidió con ningún código de barras exacto: se trata como una
+    # búsqueda general (marca, modelo, tipo, anaquel, referencia, etc.)
+    # y se muestra en el listado de repuestos.
+    return redirect(f"{reverse('repuesto_list')}?q={quote(texto)}")
 

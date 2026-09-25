@@ -122,8 +122,16 @@ class InventarioService:
             qs = qs.filter(tipo_id=tipo_id)
         if busqueda:
             qs = qs.filter(
-                Q(referencia__icontains=busqueda) | Q(descripcion__icontains=busqueda)
-            )
+                Q(modelo__nombre__icontains=busqueda)
+                | Q(modelo__marca__nombre__icontains=busqueda)
+                | Q(tipo__nombre__icontains=busqueda)
+                | Q(referencia__icontains=busqueda)
+                | Q(descripcion__icontains=busqueda)
+                | Q(codigo_barras__icontains=busqueda)
+                | Q(anaquel_actual__icontains=busqueda)
+                | Q(unidades__anaquel__codigo__icontains=busqueda)
+            ).distinct()
+        return qs
         return qs
 
     @staticmethod
