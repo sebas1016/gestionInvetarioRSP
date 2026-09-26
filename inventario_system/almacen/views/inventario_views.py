@@ -90,7 +90,7 @@ def repuesto_list(request):
     repuestos_pagina = paginator.get_page(numero_pagina)
 
     context = {
-        "repuestos": repuestos_pagina,  # ahora es un Page, no el queryset crudo
+        "repuestos": repuestos_pagina,
         "marcas": Marca.objects.all(),
         "tipos": TipoRepuesto.objects.all(),
         "marca_id": marca_id,
@@ -98,6 +98,12 @@ def repuesto_list(request):
         "busqueda": busqueda,
         "breadcrumbs": [("Repuestos", None)],
     }
+
+    # Búsqueda en vivo: el JS pide esto mismo por fetch mientras el usuario
+    # escribe; en ese caso solo se devuelve la tabla, no la página completa.
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render(request, "almacen/partials/_repuesto_tabla.html", context)
+
     return render(request, "inventario/repuesto_list.html", context)
 
 

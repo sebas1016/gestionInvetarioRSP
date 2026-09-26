@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Repuestos{% endblock %}
 
@@ -10,10 +11,11 @@
     <a href="{% url 'repuesto_create' %}" class="btn btn-outline-primary">+ Nuevo repuesto</a>
 </div>
 
-<form method="get" class="row g-2 mb-4">
+<form method="get" id="form-filtro-repuestos" class="row g-2 mb-4">
     <div class="col-md-4">
-        <input type="text" name="q" class="form-control" placeholder="Buscar por marca, modelo, tipo, anaquel o referencia..."
-            value="{{ busqueda }}">
+        <input type="text" name="q" id="input-busqueda-repuestos" class="form-control"
+               placeholder="Buscar por marca, modelo, tipo, anaquel o referencia..."
+               value="{{ busqueda }}" autocomplete="off">
     </div>
     <div class="col-md-3">
         <select name="marca" class="form-select">
@@ -40,74 +42,11 @@
     </div>
 </form>
 
-<div class="card">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Tipo</th>
-                    <th>Anaquel</th>
-                    <th>Stock</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for repuesto in repuestos %}
-                    <tr>
-                        <td>{{ repuesto.modelo.marca.nombre }}</td>
-                        <td>{{ repuesto.modelo.nombre }}</td>
-                        <td>{{ repuesto.tipo.nombre }}</td>
-                        <td>
-                            {% if repuesto.anaquel_actual %}
-                                <span class="badge bg-light text-dark border">{{ repuesto.anaquel_actual }}</span>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{% url 'repuesto_detail' repuesto.pk %}"
-                               class="btn btn-sm btn-outline-primary">Ver detalle</a>
-                        </td>
-                    </tr>
-                    
-                {% empty %}
-                    <tr><td colspan="6" class="text-center text-muted py-4">No hay repuestos registrados.</td></tr>
-                {% endfor %}
-                {% if repuestos.has_other_pages %}
-                        <nav class="mt-3">
-                            <ul class="pagination justify-content-center">
-
-                                {% if repuestos.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link"
-                                        href="?page={{ repuestos.previous_page_number }}&q={{ busqueda }}&marca={{ marca_id|default:'' }}&tipo={{ tipo_id|default:'' }}">
-                                            Anterior
-                                        </a>
-                                    </li>
-                                {% endif %}
-
-                                <li class="page-item disabled">
-                                    <span class="page-link">
-                                        Página {{ repuestos.number }} de {{ repuestos.paginator.num_pages }}
-                                    </span>
-                                </li>
-
-                                {% if repuestos.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link"
-                                        href="?page={{ repuestos.next_page_number }}&q={{ busqueda }}&marca={{ marca_id|default:'' }}&tipo={{ tipo_id|default:'' }}">
-                                            Siguiente
-                                        </a>
-                                    </li>
-                                {% endif %}
-
-                            </ul>
-                        </nav>
-                    {% endif %}
-            </tbody>
-        </table>
-    </div>
+<div id="repuesto-tabla-contenedor">
+    {% include "almacen/partials/_repuesto_tabla.html" %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/repuesto_list.js' %}"></script>
 {% endblock %}
